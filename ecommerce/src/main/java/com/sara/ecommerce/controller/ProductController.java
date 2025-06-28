@@ -1,9 +1,11 @@
 package com.sara.ecommerce.controller;
 
+import com.sara.ecommerce.dto.ProductDto;
 import com.sara.ecommerce.model.Category;
-import com.sara.ecommerce.model.Product;
+import com.sara.ecommerce.service.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,19 +17,22 @@ import java.util.List;
 @Tag(name="Ecommerce management", description = "Ecommerce management application")
 public class ProductController {
 
-    private static List<Product> productList = new ArrayList<>();
+    private static List<ProductDto> productList = new ArrayList<>();
+
+    @Autowired
+    IProductService iProductService;
 
     @Operation(summary="get all products", description = "get all products in the productslist")
     @GetMapping("/products")
-    public List<Product> getProducts() {
+    public List<ProductDto> getProducts() {
         return productList;
     }
 
     @Operation(summary="get product by id", description = "pass id to get product")
     @GetMapping("/products/{productId}")
-    public Product getProduct(@PathVariable("productId") Long productId) {
+    public ProductDto getProduct(@PathVariable("productId") Long productId) {
         if (!CollectionUtils.isEmpty(productList)) {
-            for (Product product : productList) {
+            for (ProductDto product : productList) {
                 if (product.getProductId() == productId) {
                     return product;
                 }
@@ -38,7 +43,7 @@ public class ProductController {
 
     @Operation(summary="create products", description = "create product by passing product")
     @PostMapping("products")
-    public Product createProduct(@RequestBody Product product) {
+    public ProductDto createProduct(@RequestBody ProductDto product) {
         if (product != null) {
             productList.add(product);
         }
@@ -47,8 +52,8 @@ public class ProductController {
 
     @Operation(summary="update products", description = "update product by passing product")
     @PutMapping("/product/{id}")
-    public Product updateProduct(@RequestBody Product product) {
-        Product updatedProduct = null;
+    public ProductDto updateProduct(@RequestBody ProductDto product) {
+        ProductDto updatedProduct = null;
         if (product != null) {
             updatedProduct = getProduct(product.productId);
             if (updatedProduct != null) {
@@ -62,8 +67,8 @@ public class ProductController {
 
     @Operation(summary="Delete product", description = "Delete the product by passing product id")
     @DeleteMapping("/products/{id}")
-    public List<Product> deleteProduct(@PathVariable("id") Long productId) {
-        Product updatedProduct = getProduct(productId);
+    public List<ProductDto> deleteProduct(@PathVariable("id") Long productId) {
+        ProductDto updatedProduct = getProduct(productId);
         if (updatedProduct != null) {
             productList.remove(updatedProduct);
         }
@@ -71,7 +76,7 @@ public class ProductController {
     }
 
     static {
-        Product product1 = new Product();
+        ProductDto product1 = new ProductDto();
         product1.setProductName("Jeans");
         product1.setProductId(1L);
         product1.setPrice(1000L);
@@ -80,7 +85,7 @@ public class ProductController {
         category1.setName("Dress");
         product1.setCategory(category1);
 
-        Product product2 = new Product();
+        ProductDto product2 = new ProductDto();
         product2.setProductId(2L);
         product2.setProductName("Mouse");
         product2.setPrice(2000L);
