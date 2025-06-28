@@ -2,9 +2,8 @@ package com.sara.ecommerce.controller;
 
 import com.sara.ecommerce.model.Category;
 import com.sara.ecommerce.model.Product;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +11,57 @@ import java.util.List;
 @RestController
 public class ProductController {
 
+    private static List<Product> productList = new ArrayList<>();
+
     @GetMapping("/products")
-    public List<Product> getAllProducts() {
-        //Dummy Response
+    public List<Product> getProducts() {
+        return productList;
+    }
+
+    @GetMapping("/products/{productId}")
+    public Product getProduct(@PathVariable("productId") Long productId) {
+        if (!CollectionUtils.isEmpty(productList)) {
+            for (Product product : productList) {
+                if (product.getProductId() == productId) {
+                    return product;
+                }
+            }
+        }
+        return null;
+    }
+
+    @PostMapping("products")
+    public Product createProduct(@RequestBody Product product) {
+        if (product != null) {
+            productList.add(product);
+        }
+        return product;
+    }
+
+    @PutMapping("/product/{id}")
+    public Product updateProduct(@RequestBody Product product) {
+        Product updatedProduct = null;
+        if (product != null) {
+            updatedProduct = getProduct(product.productId);
+            if (updatedProduct != null) {
+                updatedProduct.setCategory(product.getCategory());
+                updatedProduct.setProductName(product.getProductName());
+                updatedProduct.setPrice(product.getPrice());
+            }
+        }
+        return updatedProduct;
+    }
+
+    @DeleteMapping("/products/{id}")
+    public List<Product> deleteProduct(@PathVariable("id") Long productId) {
+        Product updatedProduct = getProduct(productId);
+        if (updatedProduct != null) {
+            productList.remove(updatedProduct);
+        }
+        return productList;
+    }
+
+    static {
         Product product1 = new Product();
         product1.setProductName("Jeans");
         product1.setProductId(1L);
@@ -34,22 +81,9 @@ public class ProductController {
         category2.setName("Dress");
         product2.setCategory(category2);
 
-
-        List<Product> productList = new ArrayList<>();
         productList.add(product1);
         productList.add(product2);
-        return productList;
     }
 
-    @GetMapping("/products/{productId}")
-    public Product getProduct(@PathVariable("productId") int productId) {
-        //Dummy Response
-        for (Product product : getAllProducts()) {
-            if (product.getProductId() == productId) {
-                return product;
-            }
-        }
-        return null;
-    }
 
 }
