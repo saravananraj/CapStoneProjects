@@ -1,6 +1,5 @@
 package com.sara.ecommerce.dto;
 
-import com.sara.ecommerce.model.Category;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,8 +7,15 @@ import lombok.Setter;
 @Setter
 public class ProductDto {
 
-    public Long productId;
-    public String productName;
-    public Long price;
-    public Category category;
+    private Long id;  //ToDo: why are we taking as input
+
+    private String name;
+
+    private String description;
+
+    private Double price;
+
+    private String imageUrl;
+
+    private CategoryDto category;
 }
