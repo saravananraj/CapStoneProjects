@@ -1,9 +1,6 @@
 package com.sara.ecommerce.dao;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,9 +8,6 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Product extends  BaseClass {
-
-    @Id
-    private Long id;
 
     private String name;
 
@@ -23,7 +17,7 @@ public class Product extends  BaseClass {
 
     private String imageUrl;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
     private Category category;
 
     public Boolean isPrimeSpecificSale;

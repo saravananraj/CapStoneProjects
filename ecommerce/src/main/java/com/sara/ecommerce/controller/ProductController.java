@@ -8,6 +8,7 @@ import com.sara.ecommerce.service.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +22,16 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    IProductService productService;
+    IProductService storageProductService;
+
+    @Autowired
+    @Qualifier("fakeStoreProductService")
+    IProductService fakeStoreProductService;
 
     @Operation(summary="get all products", description = "get all products in the productslist")
     @GetMapping("/products")
     public List<ProductDto> getProducts() {
-        List<Product> allProducts = productService.getAllProducts();
+        List<Product> allProducts = storageProductService.getAllProducts();
         List<ProductDto> productDtos = new ArrayList<>();
         for(Product product : allProducts) {
             productDtos.add(from(product));
@@ -40,8 +45,8 @@ public class ProductController {
         if (productId <= 0) {
             throw new IllegalArgumentException("Product Id not found");
         }
-        Product product = productService.getProductById(productId);
-        if (product == null) throw new NullPointerException("Product should not null");
+        Product product = storageProductService.getProductById(productId);
+        if (product == null) throw new NullPointerException("Product search is not found");
         ProductDto productDto = from(product);
         return new ResponseEntity<ProductDto>(productDto, HttpStatus.OK);
     }
@@ -50,7 +55,7 @@ public class ProductController {
     @PostMapping("products")
     public ProductDto createProduct(@RequestBody ProductDto productDto) {
         Product product = fromDto(productDto);
-        Product output = productService.createProduct(product);
+        Product output = storageProductService.createProduct(product);
         if (output == null) throw new NullPointerException("Product should not null");
         return from(output);
     }
@@ -59,16 +64,15 @@ public class ProductController {
     @PutMapping("/product/{id}")
     public ProductDto updateProduct(@PathVariable Long id,@RequestBody ProductDto productDto) {
         Product product = fromDto(productDto);
-        Product output = productService.replaceProduct(product, id);
+        Product output = storageProductService.replaceProduct(product, id);
         if (output == null) throw new NullPointerException("Product should not null");
         return from(output);
     }
 
     @Operation(summary="Delete product", description = "Delete the product by passing product id")
     @DeleteMapping("/products/{id}")
-    public ProductDto deleteProduct(@PathVariable("id") Long productId) {
-        Product output = productService.deleteProduct(productId);
-        return from(output);
+    public void deleteProduct(@PathVariable("id") Long productId) {
+        storageProductService.deleteProduct(productId);
     }
 
     private Product fromDto(ProductDto productDto) {
@@ -78,10 +82,12 @@ public class ProductController {
         product.setPrice(productDto.getPrice());
         product.setImageUrl(productDto.getImageUrl());
         product.setDescription(productDto.getDescription());
+        product.setIsPrimeSpecificSale(true);
         if(productDto.getCategory() != null) {
             Category category = new Category();
             category.setId(productDto.getCategory().getId());
             category.setName(productDto.getCategory().getName());
+            category.setDescription(productDto.getCategory().getDescription());
             product.setCategory(category);
         }
         return product;

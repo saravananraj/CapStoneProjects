@@ -13,7 +13,7 @@ public interface IProductService {
 
     public Product replaceProduct(Product input,Long id);
 
-    public Product deleteProduct(Long id);
+    public void deleteProduct(Long id);
 
     public List<Product> getAllProducts();
 }

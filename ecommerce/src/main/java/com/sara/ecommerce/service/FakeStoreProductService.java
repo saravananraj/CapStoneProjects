@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Service("fakeStoreProductService")
 public class FakeStoreProductService implements IProductService{
 
     @Autowired
@@ -47,10 +47,8 @@ public class FakeStoreProductService implements IProductService{
     }
 
     @Override
-    public Product deleteProduct(Long id) {
-        FakeStoreProductDto output = fakeStoreApiClient.deleteFakeStoreProduct(id);
-        if(output==null) return null;
-        return from(output);
+    public void deleteProduct(Long id) {
+        fakeStoreApiClient.deleteFakeStoreProduct(id);
     }
 
     private FakeStoreProductDto from(Product product) {

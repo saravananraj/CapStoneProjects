@@ -1,6 +1,7 @@
 package com.sara.ecommerce.dao;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,9 +13,12 @@ import java.util.Date;
 @MappedSuperclass
 public abstract class BaseClass {
 
-    private Date createdAt;
+    @Id
+    private Long id;
 
-    private Date lastUpdatedAt;
+    private Date createdAt = new Date();
+
+    private Date lastUpdatedAt = new Date();
 
     private Status status;
 }
